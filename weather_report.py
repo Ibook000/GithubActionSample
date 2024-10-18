@@ -3,14 +3,47 @@ import os
 import requests
 import json
 from bs4 import BeautifulSoup
+def get_new():
+    # 基本参数配置
+    apiUrl = 'http://v.juhe.cn/toutiao/index'  # 接口请求URL
+    apiKey = '721b5da82bb56005199f0d1692187021'  # 在个人中心->我的数据,接口名称上方查看
 
+    requestParams = {
+        'key': apiKey,
+        'type': 'caijing',
+        'page': '0',
+        'page_size': 5,
+        'is_filter': 1,
+    }
+
+    # 发起接口网络请求
+    response = requests.get(apiUrl, params=requestParams)
+
+    # 初始化message为一个空列表
+    message = []
+
+    # 解析响应结果
+    if response.status_code == 200:
+        responseResult = response.json()
+        # 提取title
+        titles = [item['title'] for item in responseResult['result']['data']]
+
+        # 打印并收集所有title
+        for title in titles:
+            print(title)
+            message.append(title)  # 将每个title添加到列表中
+    else:
+        # 网络异常等因素，解析结果异常。可依据业务逻辑自行处理。
+        print('请求异常')
+
+    return message  # 返回包含所有标题的列表
 # 从测试号信息获取
 appID = "wx499a1d49d6e6cfb4"
 appSecret = "cff48bf2ba0df44528f9e813d19fda87"
 #收信人ID即 用户列表中的微信号，见上文
-openId = "oWagw69BNFVGlArf7oa9vBHQc504"
+openId = "oWagw69BNFVGlArf7oa9vBHQc504,oWagw6-HSBAj79R0CoTBebuw0NGs,oWagw63MjdY9lQBnsTCMP6jzssKw,oWagw6z1DkmJr5tG1UD8buxRQ8QA,oWagw67mbzQOjfQMb00lIj4Y2tbU"
 # 天气预报模板ID
-weather_template_id = "x-cmCQvxvu0REEXsnk6LcPNO65yXBy_K3eitHJCJ-rA"
+weather_template_id = "YZnZroT8SvLREThcBHINh7zCskFWiYXMtu5X-l2ApMQ"
 
 def get_weather(my_city):
     urls = ["http://www.weather.com.cn/textFC/hb.shtml",
@@ -79,44 +112,65 @@ def get_daily_love():
 
 
 def send_weather(access_token, weather):
-    # touser 就是 openID
-    # template_id 就是模板ID
-    # url 就是点击模板跳转的url
-    # data就按这种格式写，time和text就是之前{{time.DATA}}中的那个time，value就是你要替换DATA的值
 
     import datetime
     today = datetime.date.today()
     today_str = today.strftime("%Y年%m月%d日")
-
-    body = {
-        "touser": openId.strip(),
-        "template_id": weather_template_id.strip(),
-        "url": "https://weixin.qq.com",
-        "data": {
-            "date": {
-                "value": today_str
-            },
-            "region": {
-                "value": weather[0]
-            },
-            "weather": {
-                "value": weather[2]
-            },
-            "temp": {
-                "value": weather[1]
-            },
-            "wind_dir": {
-                "value": weather[3]
-            },
-            "today_note": {
-                "value": get_daily_love()
+    for i in range(len(openId.split(','))):
+        body = {
+            "touser": openId.split(',')[i],
+            "template_id": weather_template_id.strip(),
+            "url": "https://weixin.qq.com",
+            "data": {
+                "date": {
+                    "value": today_str
+                },
+                "region": {
+                    "value": weather[0]
+                },
+                "weather": {
+                    "value": weather[2]
+                },
+                "temp": {
+                    "value": weather[1]
+                },
+                "wind_dir": {
+                    "value": weather[3]
+                },
+                "today_note": {
+                    "value": get_daily_love()
+                }
             }
         }
-    }
-    url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}'.format(access_token)
-    print(requests.post(url, json.dumps(body)).text)
+        url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}'.format(access_token)
+        print(requests.post(url, json.dumps(body)).text)
 
-
+def send_new(access_token, news):
+    for i in range(len(openId.split(','))):
+        body = {
+            "touser": openId.split(',')[i],
+            "template_id": 'T6FQ7pRcKPWX8U8Usmiixm-TlqaQpK3Sg7Q7wExkyiM',
+            "url": "https://weixin.qq.com",
+            "data": {
+                "new1": {
+                    "value": news[0]
+                },
+                "new2": {
+                    "value": news[1]
+                },
+                "new3": {
+                    "value": news[2]
+                },
+                "new4": {
+                    "value": news[3]
+                },
+                "new5": {
+                    "value": news[4]
+                },
+            }
+        }
+        url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}'.format(access_token)
+        print(requests.post(url, json.dumps(body)).text)
 
 def weather_report(this_city):
     # 1.获取access_token
@@ -124,10 +178,18 @@ def weather_report(this_city):
     # 2. 获取天气
     weather = get_weather(this_city)
     print(f"天气信息： {weather}")
+
+    
     # 3. 发送消息
     send_weather(access_token, weather)
 
-
+def new_report():
+    # 1.获取access_token
+    access_token = get_access_token()
+    news= get_new()
+    # 3. 发送消息
+    send_new(access_token, news)
 
 if __name__ == '__main__':
     weather_report("泉州")
+    new_report()
