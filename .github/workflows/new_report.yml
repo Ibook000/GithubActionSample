@@ -31,7 +31,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run weather Report
       run: |
-        python weather_report.py
+        python new_report.py
       env:
         APP_ID: wx499a1d49d6e6cfb4
         APP_SECRET: cff48bf2ba0df44528f9e813d19fda87
