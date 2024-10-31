@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 appID = "wx499a1d49d6e6cfb4"
 appSecret = "cff48bf2ba0df44528f9e813d19fda87"
 #收信人ID即 用户列表中的微信号，见上文
-openId = "oWagw69BNFVGlArf7oa9vBHQc504,oWagw6-HSBAj79R0CoTBebuw0NGs,oWagw6-HSBAj79R0CoTBebuw0NGs,oWagw67mbzQOjfQMb00lIj4Y2tbU"
+openId = "oWagw69BNFVGlArf7oa9vBHQc504,oWagw6-HSBAj79R0CoTBebuw0NGs,oWagw67mbzQOjfQMb00lIj4Y2tbU"
 # 新闻模板ID
 new_template_id = "F90_AyoqqPDWWaXxLDhzELpHdSEl-22L1tbAGXOyTqs"
 
